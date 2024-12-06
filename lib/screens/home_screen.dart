@@ -41,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
               target: LatLng(defaultLat, defaultLng),
               zoom: 14.4746,
             ),
+          zoomControlsEnabled: false,
             onCameraMove: (CameraPosition position) {
               defaultLat = position.target.latitude;
               defaultLng = position.target.longitude;
