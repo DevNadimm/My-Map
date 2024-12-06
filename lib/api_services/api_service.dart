@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:my_map/api_services/models/location_from_cordinate.dart';
 import 'package:http/http.dart' as http;

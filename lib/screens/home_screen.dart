@@ -72,14 +72,22 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        child: Text(
-          locationFromCordinate.results?[0].formattedAddress ?? 'Loading...',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.location_pin, color: Colors.black54,),
+            Expanded(
+              child: Text(
+                locationFromCordinate.results?[0].formattedAddress ?? 'Loading...',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
