@@ -16,7 +16,7 @@ class ApiService {
       debugPrint("URL: $uri \nSTATUS CODE: ${response.statusCode} \nBODY: $decodedData");
       return LocationFromCordinate.fromJson(decodedData);
     } else {
-      throw Exception("Error fetching location");
+      throw Exception('Failed to fetch data: ${response.statusCode}');
     }
   }
 }
