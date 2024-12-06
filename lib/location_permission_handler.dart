@@ -18,9 +18,9 @@ Future<Position> determinePosition() async {
   }
 
   if (permission == LocationPermission.deniedForever) {
+    await Geolocator.openLocationSettings();
     return Future.error(
         'Location permissions are permanently denied, we cannot request permissions.');
   }
-
   return await Geolocator.getCurrentPosition();
 }
