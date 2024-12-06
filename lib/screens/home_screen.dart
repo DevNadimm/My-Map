@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:my_map/api_services/api_service.dart';
 import 'package:my_map/api_services/models/location_from_cordinate.dart';
 import 'package:my_map/constant.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.position});
+
+  final Position position;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -17,6 +20,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   LocationFromCordinate locationFromCordinate = LocationFromCordinate();
   ApiService apiService = ApiService();
+
+  @override
+  void initState() {
+    defaultLat = widget.position.latitude;
+    defaultLng = widget.position.longitude;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +49,9 @@ class _HomeScreenState extends State<HomeScreen> {
             mapType: MapType.normal,
             initialCameraPosition: CameraPosition(
               target: LatLng(defaultLat, defaultLng),
-              zoom: 14.4746,
+              zoom: 15,
             ),
-          zoomControlsEnabled: false,
+            zoomControlsEnabled: false,
             onCameraMove: (CameraPosition position) {
               defaultLat = position.target.latitude;
               defaultLng = position.target.longitude;
@@ -76,10 +86,14 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.location_pin, color: Colors.black54,),
+            const Icon(
+              Icons.location_pin,
+              color: Colors.black54,
+            ),
             Expanded(
               child: Text(
-                locationFromCordinate.results?[0].formattedAddress ?? 'Loading...',
+                locationFromCordinate.results?[0].formattedAddress ??
+                    'Loading...',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
