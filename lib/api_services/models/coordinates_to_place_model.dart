@@ -1,11 +1,10 @@
-class LocationFromCordinate {
+class CoordinatesToPlaceModel{
   PlusCode? plusCode;
   List<Results>? results;
   String? status;
 
-  LocationFromCordinate({this.plusCode, this.results, this.status});
-
-  LocationFromCordinate.fromJson(Map<String, dynamic> json) {
+  CoordinatesToPlaceModel({this.plusCode, this.results, this.status});
+  CoordinatesToPlaceModel.fromJson(Map<String, dynamic> json) {
     plusCode = json['plus_code'] != null
         ? PlusCode.fromJson(json['plus_code'])
         : null;

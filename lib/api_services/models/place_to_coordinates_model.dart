@@ -1,11 +1,11 @@
-class PlaceIdToCoordinates {
+class PlaceToCoordinatesModel {
   List<Null>? htmlAttributions;
   Result? result;
   String? status;
 
-  PlaceIdToCoordinates({this.htmlAttributions, this.result, this.status});
+  PlaceToCoordinatesModel({this.htmlAttributions, this.result, this.status});
 
-  PlaceIdToCoordinates.fromJson(Map<String, dynamic> json) {
+  PlaceToCoordinatesModel.fromJson(Map<String, dynamic> json) {
     if (json['html_attributions'] != null) {
       htmlAttributions = <Null>[];
     }

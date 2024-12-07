@@ -1,10 +1,10 @@
-class GetPlacesModel {
+class PlaceAutocompleteModel {
   List<Predictions>? predictions;
   String? status;
 
-  GetPlacesModel({this.predictions, this.status});
+  PlaceAutocompleteModel({this.predictions, this.status});
 
-  GetPlacesModel.fromJson(Map<String, dynamic> json) {
+  PlaceAutocompleteModel.fromJson(Map<String, dynamic> json) {
     if (json['predictions'] != null) {
       predictions = <Predictions>[];
       json['predictions'].forEach((v) {

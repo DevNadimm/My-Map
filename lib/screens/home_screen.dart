@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:my_map/api_services/api_service.dart';
-import 'package:my_map/api_services/models/location_from_cordinate.dart';
+import 'package:my_map/api_services/models/coordinates_to_place_model.dart';
 import 'package:my_map/constant.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.position});
+  const HomeScreen({super.key, required this.lat, required this.lng, });
 
-  final Position position;
+  final double lat;
+  final double lng;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -18,13 +18,13 @@ class _HomeScreenState extends State<HomeScreen> {
   double defaultLat = 22.362297444618562;
   double defaultLng = 91.80943865329027;
 
-  LocationFromCordinate locationFromCordinate = LocationFromCordinate();
+  CoordinatesToPlaceModel coordinatesToPlaceModel = CoordinatesToPlaceModel();
   ApiService apiService = ApiService();
 
   @override
   void initState() {
-    defaultLat = widget.position.latitude;
-    defaultLng = widget.position.longitude;
+    defaultLat = widget.lat;
+    defaultLng = widget.lng;
     super.initState();
   }
 
@@ -61,8 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             onCameraIdle: () async {
               final result =
-                  await apiService.getLocation(defaultLat, defaultLng);
-              locationFromCordinate = result;
+                  await apiService.fetchLocationByCoordinates(defaultLat, defaultLng);
+              coordinatesToPlaceModel = result;
               setState(() {});
             },
           ),
@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
               child: Text(
-                locationFromCordinate.results?[0].formattedAddress ??
+                coordinatesToPlaceModel.results?[0].formattedAddress ??
                     'Loading...',
                 style: const TextStyle(
                   fontSize: 18,

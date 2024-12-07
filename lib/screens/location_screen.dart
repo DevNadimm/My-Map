@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_map/api_services/api_service.dart';
-import 'package:my_map/api_services/models/get_places_model.dart';
+import 'package:my_map/api_services/models/place_autocomplete_model .dart';
+import 'package:my_map/api_services/models/place_to_coordinates_model.dart';
 import 'package:my_map/constant.dart';
 import 'package:my_map/location_permission_handler.dart';
 import 'package:my_map/screens/home_screen.dart';
@@ -14,7 +15,8 @@ class LocationScreen extends StatefulWidget {
 
 class _LocationScreenState extends State<LocationScreen> {
   final TextEditingController searchController = TextEditingController();
-  GetPlacesModel getPlacesModel = GetPlacesModel();
+  PlaceAutocompleteModel placeAutocompleteModel = PlaceAutocompleteModel();
+  PlaceToCoordinatesModel placeToCoordinatesModel = PlaceToCoordinatesModel();
 
   @override
   void dispose() {
@@ -71,8 +73,8 @@ class _LocationScreenState extends State<LocationScreen> {
                       : null,
                 ),
                 onChanged: (String value) async {
-                  final result = await ApiService().getPlaces(value);
-                  getPlacesModel = result;
+                  final result = await ApiService().fetchPlaceSuggestions(value);
+                  placeAutocompleteModel = result;
                   setState(() {});
                 },
               ),
@@ -82,17 +84,32 @@ class _LocationScreenState extends State<LocationScreen> {
               Visibility(
                 visible: searchController.text.isNotEmpty,
                 child: ListView.builder(
-                  itemCount: getPlacesModel.predictions?.length ?? 0,
+                  itemCount: placeAutocompleteModel.predictions?.length ?? 0,
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
+                      onTap: () async {
+                        final result = await ApiService().fetchCoordinatesByPlaceId(placeAutocompleteModel.predictions![index].placeId!);
+                        placeToCoordinatesModel = result;
+                        final lat = placeToCoordinatesModel.result?.geometry?.location?.lat ?? 0.0;
+                        final lng = placeToCoordinatesModel.result?.geometry?.location?.lng ?? 0.0;
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HomeScreen(lat: lat,lng: lng,);
+                            },
+                          ),
+                        );
+                      },
                       title: Row(
                         children: [
                           const Icon(Icons.location_on),
                           const SizedBox(width: 7),
                           Flexible(
                             child: Text(
-                              getPlacesModel.predictions?[index].description ??
+                              placeAutocompleteModel.predictions?[index].description ??
                                   'N/A',
                             ),
                           ),
@@ -115,7 +132,7 @@ class _LocationScreenState extends State<LocationScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) {
-                                return HomeScreen(position: value);
+                                return HomeScreen(lat: value.latitude,lng: value.longitude,);
                               },
                             ),
                           );
