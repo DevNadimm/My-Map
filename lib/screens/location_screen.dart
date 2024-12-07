@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_map/api_services/api_service.dart';
+import 'package:my_map/api_services/models/get_places_model.dart';
 import 'package:my_map/constant.dart';
 import 'package:my_map/location_permission_handler.dart';
 import 'package:my_map/screens/home_screen.dart';
@@ -12,6 +14,7 @@ class LocationScreen extends StatefulWidget {
 
 class _LocationScreenState extends State<LocationScreen> {
   final TextEditingController searchController = TextEditingController();
+  GetPlacesModel getPlacesModel = GetPlacesModel();
 
   @override
   void dispose() {
@@ -41,104 +44,113 @@ class _LocationScreenState extends State<LocationScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextFormField(
-              controller: searchController,
-              decoration: InputDecoration(
-                label: const Text(
-                  'Location',
-                  style: TextStyle(fontWeight: FontWeight.w500),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextFormField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  label: const Text(
+                    'Location',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  border: borderStyle,
+                  errorBorder: borderStyle,
+                  focusedBorder: borderStyle,
+                  disabledBorder: borderStyle,
+                  enabledBorder: borderStyle,
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear_sharp),
+                          onPressed: () {
+                            searchController.clear();
+                            setState(() {});
+                          },
+                        )
+                      : null,
                 ),
-                border: borderStyle,
-                errorBorder: borderStyle,
-                focusedBorder: borderStyle,
-                disabledBorder: borderStyle,
-                enabledBorder: borderStyle,
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear_sharp),
-                        onPressed: () {
-                          searchController.clear();
-                          setState(() {});
-                        },
-                      )
-                    : null,
-              ),
-              onChanged: (String value) {
-                setState(() {});
-              },
-            ),
-            searchController.text.isEmpty
-                ? const SizedBox(height: 16)
-                : const SizedBox(),
-            Visibility(
-              visible: searchController.text.isNotEmpty,
-              child: ListView.builder(
-                itemCount: 5,
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  return const ListTile(
-                    title: Row(
-                      children: [
-                        Icon(Icons.location_on),
-                        SizedBox(width: 7),
-                        Text('Hello World'),
-                      ],
-                    ),
-                  );
+                onChanged: (String value) async {
+                  final result = await ApiService().getPlaces(value);
+                  getPlacesModel = result;
+                  setState(() {});
                 },
               ),
-            ),
-            Visibility(
-              visible: searchController.text.isEmpty,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: () {
-                    determinePosition().then(
-                      (value) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return HomeScreen(position: value);
-                            },
+              searchController.text.isEmpty
+                  ? const SizedBox(height: 16)
+                  : const SizedBox(),
+              Visibility(
+                visible: searchController.text.isNotEmpty,
+                child: ListView.builder(
+                  itemCount: getPlacesModel.predictions?.length ?? 0,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      title: Row(
+                        children: [
+                          const Icon(Icons.location_on),
+                          const SizedBox(width: 7),
+                          Flexible(
+                            child: Text(
+                              getPlacesModel.predictions?[index].description ??
+                                  'N/A',
+                            ),
                           ),
-                        );
-                      },
+                        ],
+                      ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              Visibility(
+                visible: searchController.text.isEmpty,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      determinePosition().then(
+                        (value) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return HomeScreen(position: value);
+                              },
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.my_location,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 7),
-                      Text(
-                        'Current Location',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.my_location,
                           color: Colors.white,
-                          fontSize: 16,
                         ),
-                      ),
-                    ],
+                        SizedBox(width: 7),
+                        Text(
+                          'Current Location',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
