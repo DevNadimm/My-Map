@@ -4,6 +4,7 @@ import 'package:my_map/api_services/models/place_autocomplete_model .dart';
 import 'package:my_map/api_services/models/place_to_coordinates_model.dart';
 import 'package:my_map/constant.dart';
 import 'package:my_map/location_permission_handler.dart';
+import 'package:my_map/screens/direction_screen.dart';
 import 'package:my_map/screens/home_screen.dart';
 
 class LocationScreen extends StatefulWidget {
@@ -44,6 +45,23 @@ class _LocationScreenState extends State<LocationScreen> {
         centerTitle: true,
         backgroundColor: primaryColor,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return const DirectionScreen();
+              },
+            ),
+          );
+        },
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        child: const Icon(
+          Icons.navigation,
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -73,7 +91,8 @@ class _LocationScreenState extends State<LocationScreen> {
                       : null,
                 ),
                 onChanged: (String value) async {
-                  final result = await ApiService().fetchPlaceSuggestions(value);
+                  final result =
+                      await ApiService().fetchPlaceSuggestions(value);
                   placeAutocompleteModel = result;
                   setState(() {});
                 },
@@ -89,16 +108,25 @@ class _LocationScreenState extends State<LocationScreen> {
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
                       onTap: () async {
-                        final result = await ApiService().fetchCoordinatesByPlaceId(placeAutocompleteModel.predictions![index].placeId!);
+                        final result = await ApiService()
+                            .fetchCoordinatesByPlaceId(placeAutocompleteModel
+                                .predictions![index].placeId!);
                         placeToCoordinatesModel = result;
-                        final lat = placeToCoordinatesModel.result?.geometry?.location?.lat ?? 0.0;
-                        final lng = placeToCoordinatesModel.result?.geometry?.location?.lng ?? 0.0;
+                        final lat = placeToCoordinatesModel
+                                .result?.geometry?.location?.lat ??
+                            0.0;
+                        final lng = placeToCoordinatesModel
+                                .result?.geometry?.location?.lng ??
+                            0.0;
 
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return HomeScreen(lat: lat,lng: lng,);
+                              return HomeScreen(
+                                lat: lat,
+                                lng: lng,
+                              );
                             },
                           ),
                         );
@@ -109,7 +137,8 @@ class _LocationScreenState extends State<LocationScreen> {
                           const SizedBox(width: 7),
                           Flexible(
                             child: Text(
-                              placeAutocompleteModel.predictions?[index].description ??
+                              placeAutocompleteModel
+                                      .predictions?[index].description ??
                                   'N/A',
                             ),
                           ),
@@ -132,7 +161,10 @@ class _LocationScreenState extends State<LocationScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) {
-                                return HomeScreen(lat: value.latitude,lng: value.longitude,);
+                                return HomeScreen(
+                                  lat: value.latitude,
+                                  lng: value.longitude,
+                                );
                               },
                             ),
                           );
